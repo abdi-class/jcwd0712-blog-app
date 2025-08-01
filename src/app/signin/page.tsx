@@ -32,9 +32,14 @@ export default function SignInPage() {
         }
       );
       console.log(result.data);
-      setAccount(result.data[0]);
-      alert(`Welcome to ${result.data[0].email}`);
-      router.replace("/todo");
+      if (result.data.length === 1) {
+        setAccount(result.data[0]); // menyimpan data ke global state zustand
+        localStorage.setItem("id", result.data[0].objectId); // menyimpan data id ke localStorage untuk nanti keeplogin
+        alert(`Welcome to ${result.data[0].email}`);
+        router.replace("/create");
+      } else {
+        alert("Account not found");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -73,11 +78,12 @@ export default function SignInPage() {
                           Email
                         </Label>
                         <Input
-                          id="email"
+                          name="email"
                           type="email"
                           placeholder="Enter your email"
                           className="h-11 border-slate-200 focus:border-slate-400 focus:ring-slate-400"
                           required
+                          onChange={handleChange}
                         />
                       </div>
                       <div className="space-y-2">
@@ -88,11 +94,12 @@ export default function SignInPage() {
                           Password
                         </Label>
                         <Input
-                          id="password"
+                          name="password"
                           type="password"
                           placeholder="Enter your password"
                           className="h-11 border-slate-200 focus:border-slate-400 focus:ring-slate-400"
                           required
+                          onChange={handleChange}
                         />
                       </div>
                       <Button

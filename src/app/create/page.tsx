@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, Eye, Send } from "lucide-react";
-import { Navbar } from "@/components/navbar";
+import { Send } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Formik, Form, FormikProps } from "formik";
 import { blogSchema } from "./BlogSchema";
@@ -23,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import BlogList from "./components/BlogList";
+import { useAccountStore } from "@/lib/store/accountStore";
 // import { BlogManagement } from "@/components/blog-management";
 
 interface IBlogFormValues {
@@ -33,9 +31,7 @@ interface IBlogFormValues {
 }
 
 export default function CreateBlogPage() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const account = useAccountStore((state) => state.account);
   const [editingBlog, setEditingBlog] = useState<any>(null);
 
   const defaultValues: IBlogFormValues = {

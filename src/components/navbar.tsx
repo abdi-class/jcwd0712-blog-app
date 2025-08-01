@@ -1,12 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Menu, X, PenTool, Home, User } from "lucide-react"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Menu, X, PenTool, Home, User } from "lucide-react";
+import { useAccountStore } from "@/lib/store/accountStore";
+import axios from "axios";
 
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const account = useAccountStore((state) => state.account);
+  const setAccount = useAccountStore((state) => state.setAccount);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const keeplogin = async () => {
+    try {
+      if (localStorage.getItem("id")) {
+        const result = await axios.get(
+          "https://trimbalance-us.backendless.app/api/data/accounts",
+          {
+            params: {
+              where: `objectId='${localStorage.getItem("id")}'`,
+            },
+          }
+        );
+
+        setAccount(result.data[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    keeplogin();
+  }, []);
 
   return (
     <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
@@ -37,30 +64,48 @@ export function Navbar() {
               <PenTool className="h-4 w-4" />
               <span>Write</span>
             </Link>
-            <Link href="/blogs" className="text-slate-600 hover:text-slate-900 transition-colors">
+            <Link
+              href="/blogs"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
               Explore
             </Link>
-            <Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors">
+            <Link
+              href="/about"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
+            >
               About
             </Link>
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-3">
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
-              <Link href="/signin">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/signup">Sign Up</Link>
-            </Button>
-          </div>
+          {account?.email ? (
+            <p>Hello, {account.email}</p>
+          ) : (
+            <div className="hidden md:flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                asChild
+                className="text-slate-600 hover:text-slate-900"
+              >
+                <Link href="/signin">Sign In</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
 
@@ -116,5 +161,5 @@ export function Navbar() {
         )}
       </div>
     </nav>
-  )
+  );
 }
