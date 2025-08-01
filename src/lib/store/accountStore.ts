@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface IAccount {
-  ObjectId: string;
+  objectId: string;
   email: string;
   password: string;
 }

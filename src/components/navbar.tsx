@@ -23,6 +23,7 @@ export function Navbar() {
             },
           }
         );
+        console.log(result.data[0]);
 
         setAccount(result.data[0]);
       }

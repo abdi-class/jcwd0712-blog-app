@@ -43,16 +43,46 @@ export default function CreateBlogPage() {
 
   const onSubmit = async (values: IBlogFormValues) => {
     try {
+      if (!account?.objectId) {
+        throw new Error("Account objectId is missing!");
+      }
+
+      // Step 1: Create blog post (without relation)
       const result = await axios.post(
         "https://trimbalance-us.backendless.app/api/data/blogs",
         values
       );
 
+      const blogId = result.data?.objectId;
+      if (!blogId) {
+        throw new Error("Failed to retrieve blog objectId after creation.");
+      }
+
+      console.log([
+        {
+          __type: "Pointer",
+          className: "accounts",
+          objectId: account.objectId,
+        },
+      ]);
+
+      // Step 2: Create relation via /blogs/:id/account
+      await axios.put(
+        `https://trimbalance-us.backendless.app/api/data/blogs/${blogId}/account`,
+        {
+          objectId: account.objectId,
+        }
+      );
+
       alert("Publish blog success");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(
+        "Error publishing blog:",
+        error?.response?.data || error.message || error
+      );
     }
   };
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
