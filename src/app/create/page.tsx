@@ -58,19 +58,17 @@ export default function CreateBlogPage() {
         throw new Error("Failed to retrieve blog objectId after creation.");
       }
 
-      console.log([
-        {
-          __type: "Pointer",
-          className: "accounts",
-          objectId: account.objectId,
-        },
-      ]);
-
       // Step 2: Create relation via /blogs/:id/account
+      await axios.put(
+        `https://trimbalance-us.backendless.app/api/data/accounts/${account.objectId}/blogList`,
+        {
+          objectIds: blogId,
+        }
+      );
       await axios.put(
         `https://trimbalance-us.backendless.app/api/data/blogs/${blogId}/account`,
         {
-          objectId: account.objectId,
+          objectIds: account.objectId,
         }
       );
 
